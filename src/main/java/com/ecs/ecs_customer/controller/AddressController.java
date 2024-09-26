@@ -17,7 +17,7 @@ public class AddressController {
     private IAddressService IAddressService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAddressById(@PathVariable("id") int addressId){
+    public ResponseEntity<AddressDto> getAddressById(@PathVariable("id") int addressId){
         AddressDto addressDto = IAddressService.getAddressById(addressId);
         return ResponseEntity.ok(addressDto);
     }
@@ -63,5 +63,11 @@ public class AddressController {
             return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
         }
         return new ResponseEntity<>("Address not found!", HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAddressByCustomerId(@PathVariable("id") int customerId){
+        IAddressService.deleteAddressByCustomerId(customerId);
+        return new ResponseEntity<>("Deleted Successfully", HttpStatus.NO_CONTENT);
     }
 }

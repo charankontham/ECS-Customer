@@ -61,8 +61,6 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable("id") int customerId) {
-//        List<AddressDto> addressList = addressServiceInterface.getAllAddressByCustomerId(customerId);
-//        CartFinalDto cartFinalDto = cartServiceInterface.getCartByCustomerId(customerId);
         iCustomerService.deleteCustomerById(customerId);
         return new ResponseEntity<>("Customer deleted!", HttpStatus.OK);
     }
