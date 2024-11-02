@@ -65,7 +65,7 @@ public class AddressController {
         return new ResponseEntity<>("Address not found!", HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deleteAddressByCustomerId/{id}")
     public ResponseEntity<String> deleteAddressByCustomerId(@PathVariable("id") int customerId){
         IAddressService.deleteAddressByCustomerId(customerId);
         return new ResponseEntity<>("Deleted Successfully", HttpStatus.NO_CONTENT);

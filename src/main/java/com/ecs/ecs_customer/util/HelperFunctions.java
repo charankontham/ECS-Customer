@@ -1,7 +1,6 @@
 package com.ecs.ecs_customer.util;
 
 import com.ecs.ecs_customer.dto.*;
-import com.ecs.ecs_customer.feign.CartService;
 import com.ecs.ecs_customer.feign.OrderService;
 import com.ecs.ecs_customer.service.interfaces.IAddressService;
 import lombok.Setter;
@@ -43,10 +42,10 @@ public class HelperFunctions {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public static void removeCartByCustomerId(Integer customerId, CartService cartService) {
-        CartFinalDto cart =  (CartFinalDto) cartService.getCartByCustomerId(customerId).getBody();
+    public static void removeCartByCustomerId(Integer customerId, OrderService orderService) {
+        CartFinalDto cart =  (CartFinalDto) orderService.getCartByCustomerId(customerId).getBody();
         if (cart != null) {
-            cartService.deleteCart(cart.getCartId());
+            orderService.deleteCart(cart.getCartId());
         }
     }
 

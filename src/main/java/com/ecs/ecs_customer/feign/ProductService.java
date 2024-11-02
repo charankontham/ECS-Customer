@@ -7,20 +7,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@FeignClient("PRODUCT-SERVICE")
+@FeignClient("ECS-PRODUCT")
 public interface ProductService {
-    @GetMapping("/{id}")
+    @GetMapping("/api/product/{id}")
     ResponseEntity<ProductFinalDto> getProductById(@PathVariable("id") int productId);
 
-    @GetMapping("/")
+    @GetMapping("/api/product/")
     ResponseEntity<List<ProductFinalDto>> getAllProducts();
 
-    @PostMapping
+    @PostMapping("/api/product")
     ResponseEntity<?> addProduct(@RequestBody ProductDto productDto);
 
-    @PutMapping()
+    @PutMapping("/api/product")
     ResponseEntity<?> updateProduct(@RequestBody ProductFinalDto productFinalDto);
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/product/{id}")
     ResponseEntity<?> deleteProduct(@PathVariable("id") int productId);
 }
