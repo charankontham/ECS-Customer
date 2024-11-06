@@ -4,13 +4,13 @@ import com.ecs.ecs_customer.dto.UserDto;
 
 public interface IUserService {
 
-    UserDto getUserById(int userId);
+    UserDto getUserById(Integer userId);
 
     UserDto getUserByUsername(String username);
 
     UserDto addUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto);
+    boolean deleteUserByUsername(String username);
 
-    boolean deleteUserById(int userId);
+
 }

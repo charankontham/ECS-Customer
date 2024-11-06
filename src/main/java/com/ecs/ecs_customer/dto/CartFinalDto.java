@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartFinalDto {
-    private int cartId;
     private CustomerDto customer;
-    private List<ProductFinalDto> products;
+    private List<CartItemEnrichedDto> cartItems;
 }

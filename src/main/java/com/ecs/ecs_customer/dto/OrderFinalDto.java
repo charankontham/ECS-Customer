@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Setter
@@ -13,13 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderFinalDto {
-    private int orderId;
+    private Integer orderId;
     private CustomerDto customer;
     private AddressDto shippingAddress;
-    private List<ProductFinalDto> products;
+    private List<ProductFinalDto> orderItems;
     private String paymentType;
     private String paymentStatus;
-    private Date orderDate;
-    private Date deliveryDate;
+    private LocalDate orderDate;
+    private LocalDate deliveryDate;
     private String shippingStatus;
 }
