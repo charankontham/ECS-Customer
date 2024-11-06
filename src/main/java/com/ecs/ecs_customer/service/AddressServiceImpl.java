@@ -11,26 +11,27 @@ import com.ecs.ecs_customer.validations.AddressValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AddressServiceImpl implements IAddressService {
-
     @Autowired
     private AddressRepository addressRepository;
     @Autowired
     private CustomerRepository customerRepository;
 
     @Override
-    public AddressDto getAddressById(int addressId) {
+    public AddressDto getAddressById(Integer addressId) {
         Address address = addressRepository.findById(addressId).
                 orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
         return AddressMapper.mapToAddressDto(address);
     }
 
     @Override
-    public List<AddressDto> getAllAddressByCustomerId(int customerId) {
+    public List<AddressDto> getAllAddressByCustomerId(Integer customerId) {
         List<Address> addresses = addressRepository.findAllByCustomerId(customerId);
         return addresses.stream().map(AddressMapper::mapToAddressDto).collect(Collectors.toList());
     }
@@ -44,14 +45,14 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public Object addAddress(AddressDto addressDto) {
         boolean customerExists = customerRepository.existsById(addressDto.getCustomerId());
-        if(!customerExists) {
+        if (!customerExists) {
             return HttpStatus.NOT_FOUND;
         }
         boolean addressExists = addressRepository.existsById(addressDto.getAddressId());
-        if(addressExists) {
+        if (addressExists) {
             return HttpStatus.CONFLICT;
         }
-        if(AddressValidation.validateAddress(addressDto)) {
+        if (AddressValidation.validateAddress(addressDto)) {
             Address address = addressRepository.save(AddressMapper.mapToAddress(addressDto));
             return AddressMapper.mapToAddressDto(address);
         }
@@ -61,14 +62,14 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public Object updateAddress(AddressDto addressDto) {
         boolean customerExists = customerRepository.existsById(addressDto.getCustomerId());
-        if(!customerExists){
+        if (!customerExists) {
             return HttpStatus.NOT_ACCEPTABLE;
         }
         boolean addressExists = addressRepository.existsById(addressDto.getAddressId());
-        if(!addressExists) {
+        if (!addressExists) {
             return HttpStatus.NOT_FOUND;
         }
-        if(AddressValidation.validateAddress(addressDto)){
+        if (AddressValidation.validateAddress(addressDto)) {
             Address address = addressRepository.save(AddressMapper.mapToAddress(addressDto));
             return AddressMapper.mapToAddressDto(address);
         }
@@ -76,29 +77,32 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public boolean deleteAddressById(int addressId) {
-        if(addressId!=0 && addressRepository.existsById(addressId)){
+    @Transactional
+    public boolean deleteAddressById(Integer addressId) {
+        if (addressId != 0 && addressRepository.existsById(addressId)) {
             addressRepository.deleteById(addressId);
             return true;
         }
         return false;
     }
 
-    public void deleteAddressByCustomerId(int customerId) {
-        addressRepository.deleteAddressByCustomerId(customerId);
-    }
-
     @Override
-    public void deleteAllAddressByIds(List<Integer> addressIds) {
-        for(Integer addressId : addressIds) {
-            if(addressId!=0 && addressRepository.existsById(addressId)) {
-                addressRepository.deleteById(addressId);
-            }
+    @Transactional
+    public Boolean deleteAddressByCustomerId(Integer customerId) {
+        if (customerRepository.existsById(customerId)) {
+            addressRepository.deleteAddressByCustomerId(customerId);
+            return true;
+        } else {
+            return false;
         }
     }
 
-    @Override
-    public boolean isAddressExists(int addressId) {
-        return addressRepository.existsById(addressId);
+    @Transactional
+    public void deleteAllAddressByIds(List<Integer> addressIds) {
+        for (Integer addressId : addressIds) {
+            if (addressId != 0 && addressRepository.existsById(addressId)) {
+                addressRepository.deleteById(addressId);
+            }
+        }
     }
 }

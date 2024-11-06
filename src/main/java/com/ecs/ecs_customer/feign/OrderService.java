@@ -1,29 +1,25 @@
 package com.ecs.ecs_customer.feign;
 
-import com.ecs.ecs_customer.dto.OrderDto;
+import com.ecs.ecs_customer.dto.CartFinalDto;
 import com.ecs.ecs_customer.dto.OrderFinalDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@FeignClient("ORDER-SERVICE")
+@FeignClient(name = "ECS-ORDER", configuration = FeignClientConfig.class)
 public interface OrderService {
-    @GetMapping("/{id}")
-    ResponseEntity<OrderFinalDto> getOrderById(@PathVariable("id") int orderId);
 
-    @GetMapping("/")
-    ResponseEntity<List<OrderFinalDto>> getAllOrders();
+    @GetMapping("/api/order/getOrdersByCustomerId/{id}")
+    ResponseEntity<List<OrderFinalDto>> getAllOrdersByCustomerId(@PathVariable("id") Integer customerId);
 
-    @GetMapping("/getOrdersByCustomerId/{id}")
-    ResponseEntity<List<OrderFinalDto>> getAllOrdersByCustomerId(@PathVariable("id") int customerId);
+    @DeleteMapping("/api/order/{id}")
+    ResponseEntity<String> deleteOrder(@PathVariable("id") Integer orderId);
 
-    @PostMapping
-    ResponseEntity<?> addOrder(@RequestBody OrderDto orderDto);
+    @GetMapping("/api/cart/getCartByCustomerId/{id}")
+    ResponseEntity<CartFinalDto> getCartByCustomerId(@PathVariable("id") Integer customerId);
 
-    @PutMapping
-    ResponseEntity<?> updateOrder(@RequestBody OrderDto orderDto);
-
-    @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteOrder(@PathVariable("id") int orderId);
+    @DeleteMapping("/api/cart/{id}")
+    ResponseEntity<String> deleteCartItem(@PathVariable("id") Integer cartItemId);
 }
