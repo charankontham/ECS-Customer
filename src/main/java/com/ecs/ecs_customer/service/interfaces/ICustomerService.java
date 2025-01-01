@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ICustomerService {
 
-    CustomerDto createCustomer(CustomerDto customerDto);
+    String createCustomer(CustomerDto customerDto);
 
     List<CustomerDto> getAllCustomers();
 
@@ -20,7 +20,7 @@ public interface ICustomerService {
     @Transactional
     Boolean deleteCustomerById(Integer customerId);
 
-    Object customerLogin(String email, String password);
+    Object customerLogin(CustomerDto customerDto);
 
     boolean updatingDuplicateEmail(CustomerDto customerDto);
 

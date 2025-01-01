@@ -41,8 +41,8 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("username") String username) {
         boolean isDeleted = userService.deleteUserByUsername(username);
         if (isDeleted) {
-            return ResponseEntity.status(HttpStatus.OK).body("User seleted successfully!");
+            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User sot found!");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
     }
 }

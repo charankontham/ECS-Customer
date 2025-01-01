@@ -24,7 +24,13 @@ public class Customer {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "phone")
+    private String phone;
+
     @Column(name = "password")
     private String password;
+
+    @Column(name = "role")
+    private String role;
 
 }

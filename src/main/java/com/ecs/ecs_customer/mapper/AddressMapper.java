@@ -9,6 +9,8 @@ public class AddressMapper {
         return new Address(
                 addressDto.getAddressId(),
                 addressDto.getCustomerId(),
+                addressDto.getName(),
+                addressDto.getContact(),
                 addressDto.getStreet(),
                 addressDto.getCity(),
                 addressDto.getState(),
@@ -21,6 +23,8 @@ public class AddressMapper {
         return new AddressDto(
                 address.getAddressId(),
                 address.getCustomerId(),
+                address.getName(),
+                address.getContact(),
                 address.getStreet(),
                 address.getCity(),
                 address.getState(),
