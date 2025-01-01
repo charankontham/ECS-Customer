@@ -31,18 +31,19 @@ public class CustomerController {
         return ResponseEntity.ok(customer);
     }
 
-    @RequestMapping(value = "/getByEmail", method = RequestMethod.GET, params = "email")
-    public ResponseEntity<CustomerDto> getCustomerByEmail(@RequestParam("email") String email) {
+    @GetMapping("/getByEmail/{email}")
+    public ResponseEntity<CustomerDto> getCustomerByEmail(@PathVariable("email") String email) {
+        System.out.println("entered controller");
         CustomerDto customerDto = customerService.getCustomerByEmail(email);
         return ResponseEntity.ok(customerDto);
     }
 
-    @PostMapping
-    public ResponseEntity<?> addCustomer(@RequestBody CustomerDto customerDto) {
+    @PostMapping("/registration")
+    public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
         if (customerService.isEmailExist(customerDto.getEmail())) {
             return new ResponseEntity<>("Duplicate email!", HttpStatus.CONFLICT);
         }
-        CustomerDto newCustomer = customerService.createCustomer(customerDto);
+        String newCustomer = customerService.createCustomer(customerDto);
         if (Objects.nonNull(newCustomer)) {
             return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
         }
@@ -56,7 +57,7 @@ public class CustomerController {
         }
         CustomerDto updatedCustomer = customerService.updateCustomer(customerDto);
         if (Objects.nonNull(updatedCustomer)) {
-            return new ResponseEntity<>(updatedCustomer, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
         }
         return new ResponseEntity<>("Validation failed", HttpStatus.BAD_REQUEST);
     }
@@ -74,16 +75,13 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<Object> customerLogin(@RequestParam String email, @RequestParam String password) {
-        Object response = customerService.customerLogin(email, password);
+    @PostMapping("/login")
+    public ResponseEntity<Object> customerLogin(@RequestBody CustomerDto customerDto) {
+        Object response = customerService.customerLogin(customerDto);
         if (response == HttpStatus.UNAUTHORIZED) {
-            return new ResponseEntity<>("Wrong password!", HttpStatus.UNAUTHORIZED);
-        } else if (response == HttpStatus.NOT_FOUND) {
-            return new ResponseEntity<>("User not found!", HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>("Wrong credentials!", HttpStatus.UNAUTHORIZED);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/getUserDetailsService")

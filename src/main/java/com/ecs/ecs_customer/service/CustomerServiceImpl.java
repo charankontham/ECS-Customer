@@ -7,16 +7,16 @@ import com.ecs.ecs_customer.mapper.CustomerMapper;
 import com.ecs.ecs_customer.repository.CustomerRepository;
 import com.ecs.ecs_customer.service.interfaces.ICustomerService;
 import com.ecs.ecs_customer.validations.CustomerValidation;
-import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,16 +26,20 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private RemoveDependencies removeDependencies;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JWTService jwtService;
 
     @Override
-    public CustomerDto createCustomer(CustomerDto customerDto) {
+    public String createCustomer(CustomerDto customerDto) {
         if (CustomerValidation.validateCustomer(customerDto) &&
                 customerRepository.findByEmail(customerDto.getEmail()).isEmpty()
         ) {
             customerDto.setPassword(bCryptPasswordEncoder.encode(customerDto.getPassword()));
             Customer customerEntity = CustomerMapper.mapToCustomer(customerDto);
             Customer savedCustomer = customerRepository.save(customerEntity);
-            return CustomerMapper.mapToCustomerDto(savedCustomer);
+            return jwtService.generateToken(savedCustomer.getEmail());
         }
         return null;
     }
@@ -56,6 +60,8 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public CustomerDto getCustomerByEmail(String email) {
+        System.out.println(email);
+        System.out.println(customerRepository.existsByEmail(email));
         Customer retrievedCustomer = customerRepository.findByEmail(email).
                 orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
         System.out.println(retrievedCustomer.getCustomerName());
@@ -65,7 +71,11 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public CustomerDto updateCustomer(CustomerDto customerDto) {
         if (CustomerValidation.validateCustomer(customerDto)) {
-            customerDto.setPassword(bCryptPasswordEncoder.encode(customerDto.getPassword()));
+            Customer customer = customerRepository.findById(customerDto.getCustomerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
+            if (!customer.getPassword().equals(customerDto.getPassword())) {
+                customerDto.setPassword(bCryptPasswordEncoder.encode(customerDto.getPassword()));
+            }
             Customer updatedCustomer = customerRepository.save(CustomerMapper.mapToCustomer(customerDto));
             return CustomerMapper.mapToCustomerDto(updatedCustomer);
         }
@@ -92,19 +102,17 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Object customerLogin(String email, String password) {
-        Customer customerEntity = customerRepository.findByEmail(email).orElse(null);
-        if (Objects.isNull(customerEntity)) {
-            return HttpStatus.NOT_FOUND;
-        } else {
-            String encryptedPassword = Hashing.sha256().
-                    hashString(password, StandardCharsets.UTF_8).
-                    toString();
-            if (Objects.nonNull(customerEntity.getPassword())
-                    && customerEntity.getPassword().equals(encryptedPassword))
-                return CustomerMapper.mapToCustomerDto(customerEntity);
-            else
-                return HttpStatus.UNAUTHORIZED;
+    public Object customerLogin(CustomerDto customerDto) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(customerDto.getEmail(), customerDto.getPassword()));
+            if (authentication.isAuthenticated()) {
+                return jwtService.generateToken(customerDto.getEmail());
+            }
+            return HttpStatus.UNAUTHORIZED;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return HttpStatus.UNAUTHORIZED;
         }
     }
 

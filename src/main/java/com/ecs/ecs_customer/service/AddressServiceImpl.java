@@ -48,9 +48,11 @@ public class AddressServiceImpl implements IAddressService {
         if (!customerExists) {
             return HttpStatus.NOT_FOUND;
         }
-        boolean addressExists = addressRepository.existsById(addressDto.getAddressId());
-        if (addressExists) {
-            return HttpStatus.CONFLICT;
+        if (addressDto.getAddressId() != null) {
+            boolean addressExists = addressRepository.existsById(addressDto.getAddressId());
+            if (addressExists) {
+                return HttpStatus.CONFLICT;
+            }
         }
         if (AddressValidation.validateAddress(addressDto)) {
             Address address = addressRepository.save(AddressMapper.mapToAddress(addressDto));

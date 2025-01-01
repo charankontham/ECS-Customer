@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
-public class UserServiceImpl implements IUserService, UserDetailsService {
+public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
@@ -61,13 +61,13 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         return false;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (Objects.isNull(user)) {
-            throw new ResourceNotFoundException("User not found!");
-        } else {
-            return new UserPrincipal(user);
-        }
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = userRepository.findByUsername(username).orElse(null);
+//        if (Objects.isNull(user)) {
+//            throw new ResourceNotFoundException("User not found!");
+//        } else {
+//            return new UserPrincipal(user);
+//        }
+//    }
 }

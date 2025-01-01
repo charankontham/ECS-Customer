@@ -1,5 +1,6 @@
 package com.ecs.ecs_customer.feign;
 
+import com.ecs.ecs_customer.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

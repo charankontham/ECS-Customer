@@ -1,5 +1,6 @@
 package com.ecs.ecs_customer.feign;
 
+import com.ecs.ecs_customer.config.FeignClientConfig;
 import com.ecs.ecs_customer.dto.CartFinalDto;
 import com.ecs.ecs_customer.dto.OrderFinalDto;
 import org.springframework.cloud.openfeign.FeignClient;
