@@ -60,11 +60,8 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public CustomerDto getCustomerByEmail(String email) {
-        System.out.println(email);
-        System.out.println(customerRepository.existsByEmail(email));
         Customer retrievedCustomer = customerRepository.findByEmail(email).
                 orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
-        System.out.println(retrievedCustomer.getCustomerName());
         return CustomerMapper.mapToCustomerDto(retrievedCustomer);
     }
 

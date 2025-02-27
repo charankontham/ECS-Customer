@@ -1,6 +1,6 @@
 package com.ecs.ecs_customer.config;
 
-import com.ecs.ecs_customer.service.CustomUserDetailsService;
+import com.ecs.ecs_customer.service.UserAuthenticationDetails;
 import com.ecs.ecs_customer.service.JWTService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -38,7 +38,7 @@ public class JwtFilter  extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(username);
+            UserDetails userDetails = context.getBean(UserAuthenticationDetails.class).loadUserByUsername(username);
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -47,7 +47,6 @@ public class JwtFilter  extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -59,7 +58,6 @@ public class JwtFilter  extends OncePerRequestFilter {
                 "/api/customer/getByEmail/**",
                 "/api/customer/getByEmail/{email}"
         );
-
         AntPathMatcher pathMatcher = new AntPathMatcher();
         String requestPath = request.getServletPath();
         return ALLOWED_PATHS.stream()
