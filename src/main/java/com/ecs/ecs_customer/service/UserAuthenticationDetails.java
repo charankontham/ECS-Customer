@@ -28,10 +28,11 @@ public class UserAuthenticationDetails implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Customer customerResponse = customerRepository.findByEmail(username).orElse(null);
-        ResponseEntity<AdminDto> adminResponse = adminService.getByUsername(username);
         if (Objects.nonNull(customerResponse)) {
             return new UserPrincipal(CustomerMapper.mapToCustomerDto(customerResponse));
-        } else if(Objects.nonNull(adminResponse.getBody()) || adminResponse.getStatusCode() == HttpStatus.OK){
+        }
+        ResponseEntity<AdminDto> adminResponse = adminService.getByUsername(username);
+        if(adminResponse.getStatusCode() == HttpStatus.OK && Objects.nonNull(adminResponse.getBody())){
             return new UserPrincipal(adminResponse.getBody());
         }else{
             throw new ResourceNotFoundException("User not found");
