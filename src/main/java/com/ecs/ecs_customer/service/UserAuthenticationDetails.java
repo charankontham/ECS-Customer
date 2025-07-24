@@ -4,7 +4,7 @@ import com.ecs.ecs_customer.dto.AdminDto;
 import com.ecs.ecs_customer.dto.UserPrincipal;
 import com.ecs.ecs_customer.entity.Customer;
 import com.ecs.ecs_customer.exception.ResourceNotFoundException;
-import com.ecs.ecs_customer.feign.AdminService;
+import com.ecs.ecs_customer.feign.InventoryService;
 import com.ecs.ecs_customer.mapper.CustomerMapper;
 import com.ecs.ecs_customer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +23,26 @@ public class UserAuthenticationDetails implements UserDetailsService {
     CustomerRepository customerRepository;
 
     @Autowired
-    private AdminService adminService;
+    private InventoryService inventoryService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Customer customerResponse = customerRepository.findByEmail(username).orElse(null);
-        if (Objects.nonNull(customerResponse)) {
-            return new UserPrincipal(CustomerMapper.mapToCustomerDto(customerResponse));
+        try{
+            Customer customerResponse = customerRepository.findByEmail(username).orElse(null);
+            if (Objects.nonNull(customerResponse)) {
+                return new UserPrincipal(CustomerMapper.mapToCustomerDto(customerResponse));
+            }else{
+                ResponseEntity<AdminDto> adminResponse = inventoryService.getAdminByUsername(username);
+                if(adminResponse.getStatusCode() == HttpStatus.OK && Objects.nonNull(adminResponse.getBody())){
+                    return new UserPrincipal(adminResponse.getBody());
+                }
+            }
+        }catch (Exception e){
+            ResponseEntity<AdminDto> adminResponse = inventoryService.getAdminByUsername(username);
+            if(adminResponse.getStatusCode() == HttpStatus.OK && Objects.nonNull(adminResponse.getBody())){
+                return new UserPrincipal(adminResponse.getBody());
+            }
         }
-        ResponseEntity<AdminDto> adminResponse = adminService.getByUsername(username);
-        if(adminResponse.getStatusCode() == HttpStatus.OK && Objects.nonNull(adminResponse.getBody())){
-            return new UserPrincipal(adminResponse.getBody());
-        }else{
-            throw new ResourceNotFoundException("User not found");
-        }
+        throw new ResourceNotFoundException("User not found");
     }
 }

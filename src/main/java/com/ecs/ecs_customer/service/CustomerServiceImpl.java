@@ -8,6 +8,7 @@ import com.ecs.ecs_customer.repository.CustomerRepository;
 import com.ecs.ecs_customer.service.interfaces.ICustomerService;
 import com.ecs.ecs_customer.validations.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public List<CustomerDto> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
+        customers.forEach(customer -> customer.setPassword(""));
         return customers.stream().map((CustomerMapper::mapToCustomerDto))
                 .collect(Collectors.toList());
     }
@@ -55,6 +58,7 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerDto getCustomerById(Integer customerId) {
         Customer retrievedCustomer = customerRepository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
+        retrievedCustomer.setPassword("");
         return CustomerMapper.mapToCustomerDto(retrievedCustomer);
     }
 
@@ -74,6 +78,7 @@ public class CustomerServiceImpl implements ICustomerService {
                 customerDto.setPassword(bCryptPasswordEncoder.encode(customerDto.getPassword()));
             }
             Customer updatedCustomer = customerRepository.save(CustomerMapper.mapToCustomer(customerDto));
+            updatedCustomer.setPassword("");
             return CustomerMapper.mapToCustomerDto(updatedCustomer);
         }
         return null;
@@ -89,9 +94,12 @@ public class CustomerServiceImpl implements ICustomerService {
                     return true;
                 }
                 return false;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                throw e;
+            } catch (DataIntegrityViolationException ex) {
+                System.out.println(ex.getMessage());
+                return false;
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+                throw ex;
             }
         } else {
             return false;

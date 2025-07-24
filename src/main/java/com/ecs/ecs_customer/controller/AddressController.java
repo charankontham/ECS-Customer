@@ -3,10 +3,12 @@ package com.ecs.ecs_customer.controller;
 import com.ecs.ecs_customer.dto.AddressDto;
 import com.ecs.ecs_customer.service.interfaces.IAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,9 +29,9 @@ public class AddressController {
         return ResponseEntity.ok(addressService.getAllAddresses());
     }
 
-    @GetMapping("/getAllAddressByCustomerId/{id}")
-    public ResponseEntity<List<AddressDto>> getAllAddressByCustomerId(@PathVariable("id") Integer customerId) {
-        return ResponseEntity.ok(addressService.getAllAddressByCustomerId(customerId));
+    @GetMapping("/getAllAddressByUserId/{id}")
+    public ResponseEntity<List<AddressDto>> getAllAddressByUserId(@PathVariable("id") String userId) {
+        return ResponseEntity.ok(addressService.getAllAddressByUserId(userId));
     }
 
     @PostMapping
@@ -63,19 +65,27 @@ public class AddressController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAddressById(@PathVariable("id") Integer addressId) {
-        boolean isDeleted = addressService.deleteAddressById(addressId);
-        if (isDeleted) {
-            return new ResponseEntity<>("Deleted successfully!", HttpStatus.OK);
+        try{
+            boolean isDeleted = addressService.deleteAddressById(addressId);
+            if (isDeleted) {
+                return new ResponseEntity<>("Deleted successfully!", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Address not found!", HttpStatus.NOT_FOUND);
+        }catch (DataIntegrityViolationException ex){
+            return new ResponseEntity<>("SQL Foreign Key Constraint Violation Exception!", HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>("Address not found!", HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/deleteAddressByCustomerId/{id}")
-    public ResponseEntity<String> deleteAddressByCustomerId(@PathVariable("id") Integer customerId) {
-        boolean isDeleted = addressService.deleteAddressByCustomerId(customerId);
-        if (isDeleted) {
-            return new ResponseEntity<>("Deleted successfully!", HttpStatus.NO_CONTENT);
+    @DeleteMapping("/deleteAddressByUserId/{id}")
+    public ResponseEntity<String> deleteAddressByUserId(@PathVariable("id") String userId) {
+        try{
+            boolean isDeleted = addressService.deleteAddressByUserId(userId);
+            if (isDeleted) {
+                return new ResponseEntity<>("Deleted successfully!", HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>("Customer not found!", HttpStatus.NOT_FOUND);
+        }catch (DataIntegrityViolationException ex){
+            return new ResponseEntity<>("SQL Foreign Key Constraint Violation Exception!", HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>("Customer not found!", HttpStatus.NOT_FOUND);
     }
 }

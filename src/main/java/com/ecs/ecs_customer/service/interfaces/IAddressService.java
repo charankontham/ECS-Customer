@@ -1,13 +1,15 @@
 package com.ecs.ecs_customer.service.interfaces;
 
 import com.ecs.ecs_customer.dto.AddressDto;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 public interface IAddressService {
     AddressDto getAddressById(Integer addressId);
 
-    List<AddressDto> getAllAddressByCustomerId(Integer customerId);
+    List<AddressDto> getAllAddressByUserId(String userId);
 
     List<AddressDto> getAllAddresses();
 
@@ -15,7 +17,7 @@ public interface IAddressService {
 
     Object updateAddress(AddressDto addressDto);
 
-    boolean deleteAddressById(Integer addressId);
+    boolean deleteAddressById(Integer addressId) throws DataIntegrityViolationException;
 
-    Boolean deleteAddressByCustomerId(Integer customerId);
+    Boolean deleteAddressByUserId(String userId) throws DataIntegrityViolationException;
 }

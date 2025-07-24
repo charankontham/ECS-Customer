@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "ECS-INVENTORY-ADMIN", configuration = FeignClientConfig.class)
-public interface AdminService {
+public interface InventoryService {
+    @GetMapping("/api/admin/getById/{id}")
+    ResponseEntity<AdminDto> getAdminById(@PathVariable("id") String adminId);
+
     @GetMapping("/api/admin/getByUsername/{username}")
-    ResponseEntity<AdminDto> getByUsername(@PathVariable("username") String username);
+    ResponseEntity<AdminDto> getAdminByUsername(@PathVariable("username") String username);
 }

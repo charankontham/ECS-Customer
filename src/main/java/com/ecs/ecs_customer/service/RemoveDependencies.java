@@ -7,10 +7,12 @@ import com.ecs.ecs_customer.feign.OrderService;
 import com.ecs.ecs_customer.feign.ProductReviewService;
 import com.ecs.ecs_customer.service.interfaces.IAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -24,7 +26,7 @@ public class RemoveDependencies {
     private IAddressService addressService;
 
     @Transactional
-    public Boolean deleteCustomerDependencies(Integer customerId) {
+    public Boolean deleteCustomerDependencies(Integer customerId) throws DataIntegrityViolationException {
         try {
             productReviewService.deleteProductReviewByCustomerId(customerId);
             if (!removeCartByCustomerId(customerId)) {
@@ -33,7 +35,7 @@ public class RemoveDependencies {
             if (!removeOrderByCustomerId(customerId)) {
                 return false;
             }
-            if (!addressService.deleteAddressByCustomerId(customerId)) {
+            if (!addressService.deleteAddressByUserId("customer_" + customerId)) {
                 return false;
             }
         } catch (Exception e) {

@@ -18,8 +18,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer addressId;
 
-    @Column(name = "customer_id")
-    private Integer customerId;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "name")
     private String name;

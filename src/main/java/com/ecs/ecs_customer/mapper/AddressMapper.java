@@ -8,7 +8,7 @@ public class AddressMapper {
     public static Address mapToAddress(AddressDto addressDto) {
         return new Address(
                 addressDto.getAddressId(),
-                addressDto.getCustomerId(),
+                addressDto.getUserId(),
                 addressDto.getName(),
                 addressDto.getContact(),
                 addressDto.getStreet(),
@@ -22,7 +22,7 @@ public class AddressMapper {
     public static AddressDto mapToAddressDto(Address address) {
         return new AddressDto(
                 address.getAddressId(),
-                address.getCustomerId(),
+                address.getUserId(),
                 address.getName(),
                 address.getContact(),
                 address.getStreet(),

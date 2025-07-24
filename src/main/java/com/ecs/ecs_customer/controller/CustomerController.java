@@ -70,7 +70,7 @@ public class CustomerController {
                 return new ResponseEntity<>("Failed to delete customer!", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to Delete! SQL exception occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
