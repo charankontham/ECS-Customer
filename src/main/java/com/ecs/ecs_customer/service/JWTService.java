@@ -1,5 +1,6 @@
 package com.ecs.ecs_customer.service;
 
+import com.ecs.ecs_customer.util.ExtractSecrets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -16,8 +17,11 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
-    @Value("${secretKey}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JWTService() {
+        this.secretKey = ExtractSecrets.getSecret("USER_SECRET_KEY");
+    }
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -35,6 +39,11 @@ public class JWTService {
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractClaimType(String token){
+        Claims claims = extractAllClaims(token);
+        return claims.get("type", String.class);
     }
 
     public String extractUserName(String token) {
@@ -59,7 +68,7 @@ public class JWTService {
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class Constants {
+public class ErrorStatusCodes {
     public static final int ProductNotFound = 1;
     public final static int CustomerNotFound = 2;
     public final static int ProductCategoryNotFound = 3;

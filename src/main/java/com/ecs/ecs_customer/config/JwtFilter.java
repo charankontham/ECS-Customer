@@ -2,6 +2,7 @@ package com.ecs.ecs_customer.config;
 
 import com.ecs.ecs_customer.service.UserAuthenticationDetails;
 import com.ecs.ecs_customer.service.JWTService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,16 +36,22 @@ public class JwtFilter  extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtService.extractUserName(token);
-        }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = context.getBean(UserAuthenticationDetails.class).loadUserByUsername(username);
-            if (jwtService.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource()
-                        .buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (jwtService.extractClaimType(token) != null && jwtService.extractClaimType(token).equals("service")) {
+                if (!jwtService.isTokenExpired(token)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null,
+                            List.of(new SimpleGrantedAuthority("ROLE_SERVICE")));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } else if (username != null && jwtService.extractClaimType(token) == null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = context.getBean(UserAuthenticationDetails.class).loadUserByUsername(username);
+                if (jwtService.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource()
+                            .buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
         filterChain.doFilter(request, response);
@@ -57,6 +64,7 @@ public class JwtFilter  extends OncePerRequestFilter {
                 "/api/customer/registration",
                 "/api/customer/getByEmail/**",
                 "/api/customer/getByEmail/{email}"
+//                ,"/api/address/**"
         );
         AntPathMatcher pathMatcher = new AntPathMatcher();
         String requestPath = request.getServletPath();
