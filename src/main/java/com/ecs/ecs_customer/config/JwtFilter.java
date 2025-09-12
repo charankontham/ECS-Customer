@@ -64,7 +64,6 @@ public class JwtFilter  extends OncePerRequestFilter {
                 "/api/customer/registration",
                 "/api/customer/getByEmail/**",
                 "/api/customer/getByEmail/{email}"
-//                ,"/api/address/**"
         );
         AntPathMatcher pathMatcher = new AntPathMatcher();
         String requestPath = request.getServletPath();
