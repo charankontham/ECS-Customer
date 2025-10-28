@@ -38,6 +38,7 @@ public class UserAuthenticationDetails implements UserDetailsService {
                 }
             }
         }catch (Exception e){
+            System.out.println("Exception catched!");
             ResponseEntity<AdminDto> adminResponse = inventoryService.getAdminByUsername(username);
             if(adminResponse.getStatusCode() == HttpStatus.OK && Objects.nonNull(adminResponse.getBody())){
                 return new UserPrincipal(adminResponse.getBody());
