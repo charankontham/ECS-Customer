@@ -18,4 +18,6 @@ public class ErrorStatusCodes {
     public final static int NoErrorFound = 10;
     public final static int ProductReviewNotFound = 11;
     public final static int ProductBrandNotFound = 12;
+    public final static int SearchConflict = 13;
+    public final static int SearchHistoryNotFound = 14;
 }

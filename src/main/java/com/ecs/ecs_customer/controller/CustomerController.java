@@ -2,6 +2,7 @@ package com.ecs.ecs_customer.controller;
 
 import com.ecs.ecs_customer.dto.CustomerDto;
 import com.ecs.ecs_customer.service.interfaces.ICustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,10 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/customer")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomerController {
-    @Autowired
-    private ICustomerService customerService;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final ICustomerService customerService;
+    private final UserDetailsService userDetailsService;
 
     @GetMapping("/")
     public ResponseEntity<List<CustomerDto>> getAllCustomers() {

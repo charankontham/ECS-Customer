@@ -37,6 +37,7 @@ public class SecurityConfig {
                                 .requestMatchers( "/api/customer/getByEmail/**").permitAll()
                                 .requestMatchers( "/api/customer/login").permitAll()
                                 .requestMatchers( "/api/customer/registration").permitAll()
+//                                .requestMatchers("/api/searchHistory/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
