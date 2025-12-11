@@ -5,11 +5,9 @@ import com.ecs.ecs_customer.entity.SearchHistory;
 import com.ecs.ecs_customer.entity.UserSearchDoc;
 import com.ecs.ecs_customer.service.interfaces.ISearchHistoryService;
 import com.ecs.ecs_customer.service.interfaces.IUserSearchService;
-import com.ecs.ecs_customer.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequestMapping("/api/searchHistory")

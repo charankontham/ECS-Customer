@@ -19,7 +19,7 @@ public class UserSearchServiceImpl implements IUserSearchService {
 
     @Override
     public UserSearchDoc addOrUpdateUserSearch(UserSearchDoc userSearchDoc) {
-        userSearchDoc.setTimestamp(LocalDateTime.now(ZoneId.of("UTC")));
+        userSearchDoc.setTimestamp(LocalDateTime.now());
         userSearchDoc.setExpireAt(new Date());
         userSearchDoc.setSearchQuery(userSearchDoc.getSearchQuery().toLowerCase());
         UserSearchDoc existingDoc = userSearchRepository.findByCustomerIdAndSearchQuery(
