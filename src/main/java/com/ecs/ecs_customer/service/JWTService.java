@@ -1,5 +1,6 @@
 package com.ecs.ecs_customer.service;
 
+import com.ecs.ecs_customer.entity.Customer;
 import com.ecs.ecs_customer.util.ExtractSecrets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,15 +24,13 @@ public class JWTService {
         this.secretKey = ExtractSecrets.getSecret("USER_SECRET_KEY");
     }
 
-    public String generateToken(String username) {
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(Integer customerId, String email) {
+        System.out.println("Generating token for customer with Id : " + customerId);
         return Jwts.builder()
-                .claims()
-                .add(claims)
-                .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 60 * 24))
-                .and()
+                .claim("customerId",customerId)
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .signWith(getKey())
                 .compact();
     }

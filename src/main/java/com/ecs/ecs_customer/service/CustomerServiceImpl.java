@@ -41,7 +41,7 @@ public class CustomerServiceImpl implements ICustomerService {
             customerDto.setPassword(bCryptPasswordEncoder.encode(customerDto.getPassword()));
             Customer customerEntity = CustomerMapper.mapToCustomer(customerDto);
             Customer savedCustomer = customerRepository.save(customerEntity);
-            return jwtService.generateToken(savedCustomer.getEmail());
+            return jwtService.generateToken(savedCustomer.getCustomerId(), savedCustomer.getEmail());
         }
         return null;
     }
@@ -112,7 +112,10 @@ public class CustomerServiceImpl implements ICustomerService {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(customerDto.getEmail(), customerDto.getPassword()));
             if (authentication.isAuthenticated()) {
-                return jwtService.generateToken(customerDto.getEmail());
+                customerDto = getCustomerByEmail(customerDto.getEmail());
+                System.out.println("Customer id, email: " +
+                        customerDto.getCustomerId() + ", " + customerDto.getEmail());
+                return jwtService.generateToken(customerDto.getCustomerId(), customerDto.getEmail());
             }
             return HttpStatus.UNAUTHORIZED;
         } catch (Exception e) {

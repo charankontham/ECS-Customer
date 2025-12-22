@@ -2,6 +2,7 @@ package com.ecs.ecs_customer.config;
 
 import com.ecs.ecs_customer.service.UserAuthenticationDetails;
 import com.ecs.ecs_customer.service.JWTService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -20,11 +21,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class JwtFilter  extends OncePerRequestFilter {
-    @Autowired
-    private JWTService jwtService;
-    @Autowired
-    ApplicationContext context;
+    private final JWTService jwtService;
+    private final ApplicationContext context;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
